@@ -575,7 +575,7 @@ namespace Microsoft.VisualStudio.TestPlatform.ObjectModel
                 return this.binariesRoot;
             }
 
-            set
+            private set
             {
                 this.binariesRoot = value;
                 this.BinariesRootSet = true;
