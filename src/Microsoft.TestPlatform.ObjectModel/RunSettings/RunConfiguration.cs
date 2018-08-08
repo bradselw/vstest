@@ -55,6 +55,16 @@ namespace Microsoft.VisualStudio.TestPlatform.ObjectModel
         private string testAdaptersPaths;
 
         /// <summary>
+        /// Specifies the execution thread apartment state
+        /// </summary>
+        private PlatformApartmentState executionThreadApartmentState;
+
+        /// <summary>
+        /// Indication to treat adapter errors as warnings.
+        /// </summary>
+        private bool treatTestAdapterErrorsAsWarnings;
+
+        /// <summary>
         /// Indication to adapters to disable app domain.
         /// </summary>
         private bool disableAppDomain;
@@ -78,6 +88,11 @@ namespace Microsoft.VisualStudio.TestPlatform.ObjectModel
         /// False indicates that the test adapter should not collect source information for discovered tests
         /// </summary>
         private bool shouldCollectSourceInformation;
+
+        /// <summary>
+        /// Get the binaries root.
+        /// </summary>
+        private string binariesRoot;
 
         /// <summary>
         /// Gets the targetDevice IP for UWP app deployment
@@ -187,6 +202,7 @@ namespace Microsoft.VisualStudio.TestPlatform.ObjectModel
             set
             {
                 this.testSessionTimeout = value;
+                this.TestSessionTimeoutSet = true;
             }
         }
 
@@ -220,6 +236,7 @@ namespace Microsoft.VisualStudio.TestPlatform.ObjectModel
             set
             {
                 this.inIsolation = value;
+                this.InIsolationSet = true;
             }
         }
 
@@ -353,6 +370,7 @@ namespace Microsoft.VisualStudio.TestPlatform.ObjectModel
             set
             {
                 this.targetDevice = value;
+                this.TargetDeviceSet = true;
             }
         }
 
@@ -383,8 +401,16 @@ namespace Microsoft.VisualStudio.TestPlatform.ObjectModel
         [CLSCompliant(false)]
         public PlatformApartmentState ExecutionThreadApartmentState
         {
-            get;
-            set;
+            get
+            {
+                return this.executionThreadApartmentState;
+            }
+
+            set
+            {
+                this.executionThreadApartmentState = value;
+                this.ExecutionThreadApartmentStateSet = true;
+            }
         }
 
         /// <summary>
@@ -392,8 +418,16 @@ namespace Microsoft.VisualStudio.TestPlatform.ObjectModel
         /// </summary>
         public bool TreatTestAdapterErrorsAsWarnings
         {
-            get;
-            set;
+            get
+            {
+                return this.treatTestAdapterErrorsAsWarnings;
+            }
+
+            set
+            {
+                this.treatTestAdapterErrorsAsWarnings = value;
+                this.TreatTestAdapterErrorsAsWarningsSet = true;
+            }
         }
 
         /// <summary>
@@ -424,9 +458,27 @@ namespace Microsoft.VisualStudio.TestPlatform.ObjectModel
         }
 
         /// <summary>
+        /// Gets a value indicating test session timeout is set
+        /// </summary>
+        public bool TestSessionTimeoutSet
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Gets a value indicating whether design mode is set.
         /// </summary>
         public bool DesignModeSet
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether in isolation is set.
+        /// </summary>
+        public bool InIsolationSet
         {
             get;
             private set;
@@ -469,6 +521,24 @@ namespace Microsoft.VisualStudio.TestPlatform.ObjectModel
         }
 
         /// <summary>
+        /// Gets a value indicating whether execution thread apartment state set.
+        /// </summary>
+        public bool ExecutionThreadApartmentStateSet
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether treat adapter errors as warnings set.
+        /// </summary>
+        public bool TreatTestAdapterErrorsAsWarningsSet
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Gets a value indicating whether results directory is set.
         /// </summary>
         public bool ResultsDirectorySet
@@ -478,9 +548,39 @@ namespace Microsoft.VisualStudio.TestPlatform.ObjectModel
         }
 
         /// <summary>
+        /// Gets a value indicating whether binaries root is set.
+        /// </summary>
+        public bool BinariesRootSet
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether target device is set.
+        /// </summary>
+        public bool TargetDeviceSet
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
         /// Gets the binaries root.
         /// </summary>
-        public string BinariesRoot { get; private set; }
+        public string BinariesRoot
+        {
+            get
+            {
+                return this.binariesRoot;
+            }
+
+            set
+            {
+                this.binariesRoot = value;
+                this.BinariesRootSet = true;
+            }
+        }
 
         /// <summary>
         /// Collect source information
@@ -498,73 +598,112 @@ namespace Microsoft.VisualStudio.TestPlatform.ObjectModel
 
             XmlElement root = doc.CreateElement(Constants.RunConfigurationSettingsName);
 
-            XmlElement resultDirectory = doc.CreateElement("ResultsDirectory");
-            resultDirectory.InnerXml = this.ResultsDirectory;
-            root.AppendChild(resultDirectory);
+            if (this.ResultsDirectorySet)
+            {
+                XmlElement resultDirectory = doc.CreateElement("ResultsDirectory");
+                resultDirectory.InnerXml = this.ResultsDirectory;
+                root.AppendChild(resultDirectory);
+            }
 
-            XmlElement targetPlatform = doc.CreateElement("TargetPlatform");
-            targetPlatform.InnerXml = this.TargetPlatform.ToString();
-            root.AppendChild(targetPlatform);
+            if (this.TargetPlatformSet)
+            {
+                XmlElement targetPlatform = doc.CreateElement("TargetPlatform");
+                targetPlatform.InnerXml = this.TargetPlatform.ToString();
+                root.AppendChild(targetPlatform);
+            }
 
-            XmlElement maxCpuCount = doc.CreateElement("MaxCpuCount");
-            maxCpuCount.InnerXml = this.MaxCpuCount.ToString();
-            root.AppendChild(maxCpuCount);
+            if (this.MaxCpuCountSet)
+            {
+                XmlElement maxCpuCount = doc.CreateElement("MaxCpuCount");
+                maxCpuCount.InnerXml = this.MaxCpuCount.ToString();
+                root.AppendChild(maxCpuCount);
+            }
 
-            XmlElement batchSize = doc.CreateElement("BatchSize");
-            batchSize.InnerXml = this.BatchSize.ToString();
-            root.AppendChild(batchSize);
+            if (this.BatchSizeSet)
+            {
+                XmlElement batchSize = doc.CreateElement("BatchSize");
+                batchSize.InnerXml = this.BatchSize.ToString();
+                root.AppendChild(batchSize);
+            }
 
-            XmlElement testSessionTimeout = doc.CreateElement("TestSessionTimeout");
-            testSessionTimeout.InnerXml = this.TestSessionTimeout.ToString();
-            root.AppendChild(testSessionTimeout);
+            if (this.TestSessionTimeoutSet)
+            {
+                XmlElement testSessionTimeout = doc.CreateElement("TestSessionTimeout");
+                testSessionTimeout.InnerXml = this.TestSessionTimeout.ToString();
+                root.AppendChild(testSessionTimeout);
+            }
 
-            XmlElement designMode = doc.CreateElement("DesignMode");
-            designMode.InnerXml = this.DesignMode.ToString();
-            root.AppendChild(designMode);
+            if (this.DesignModeSet)
+            {
+                XmlElement designMode = doc.CreateElement("DesignMode");
+                designMode.InnerXml = this.DesignMode.ToString();
+                root.AppendChild(designMode);
+            }
 
-            XmlElement inIsolation = doc.CreateElement("InIsolation");
-            inIsolation.InnerXml = this.InIsolation.ToString();
-            root.AppendChild(inIsolation);
+            if (this.InIsolationSet)
+            {
+                XmlElement inIsolation = doc.CreateElement("InIsolation");
+                inIsolation.InnerXml = this.InIsolation.ToString();
+                root.AppendChild(inIsolation);
+            }
 
-            XmlElement collectSourceInformation = doc.CreateElement("CollectSourceInformation");
-            collectSourceInformation.InnerXml = this.ShouldCollectSourceInformation.ToString();
-            root.AppendChild(collectSourceInformation);
+            if (this.CollectSourceInformationSet)
+            {
+                XmlElement collectSourceInformation = doc.CreateElement("CollectSourceInformation");
+                collectSourceInformation.InnerXml = this.ShouldCollectSourceInformation.ToString();
+                root.AppendChild(collectSourceInformation);
+            }
 
-            XmlElement disableAppDomain = doc.CreateElement("DisableAppDomain");
-            disableAppDomain.InnerXml = this.DisableAppDomain.ToString();
-            root.AppendChild(disableAppDomain);
+            if (this.DisableAppDomainSet)
+            {
+                XmlElement disableAppDomain = doc.CreateElement("DisableAppDomain");
+                disableAppDomain.InnerXml = this.DisableAppDomain.ToString();
+                root.AppendChild(disableAppDomain);
+            }
 
-            XmlElement disableParallelization = doc.CreateElement("DisableParallelization");
-            disableParallelization.InnerXml = this.DisableParallelization.ToString();
-            root.AppendChild(disableParallelization);
+            if (this.DisableParallelizationSet)
+            {
+                XmlElement disableParallelization = doc.CreateElement("DisableParallelization");
+                disableParallelization.InnerXml = this.DisableParallelization.ToString();
+                root.AppendChild(disableParallelization);
+            }
 
-            XmlElement targetFrameworkVersion = doc.CreateElement("TargetFrameworkVersion");
-            targetFrameworkVersion.InnerXml = this.TargetFramework.ToString();
-            root.AppendChild(targetFrameworkVersion);
+            if (this.TargetFrameworkSet)
+            {
+                XmlElement targetFrameworkVersion = doc.CreateElement("TargetFrameworkVersion");
+                targetFrameworkVersion.InnerXml = this.TargetFramework.ToString();
+                root.AppendChild(targetFrameworkVersion);
+            }
 
-            XmlElement executionThreadApartmentState = doc.CreateElement("ExecutionThreadApartmentState");
-            executionThreadApartmentState.InnerXml = this.ExecutionThreadApartmentState.ToString();
-            root.AppendChild(executionThreadApartmentState);
+            if (this.ExecutionThreadApartmentStateSet)
+            {
+                XmlElement executionThreadApartmentState = doc.CreateElement("ExecutionThreadApartmentState");
+                executionThreadApartmentState.InnerXml = this.ExecutionThreadApartmentState.ToString();
+                root.AppendChild(executionThreadApartmentState);
+            }
 
-            if (this.TestAdaptersPaths != null)
+            if (this.TestAdaptersPathsSet && this.TestAdaptersPaths != null)
             {
                 XmlElement testAdaptersPaths = doc.CreateElement("TestAdaptersPaths");
                 testAdaptersPaths.InnerXml = this.TestAdaptersPaths;
                 root.AppendChild(testAdaptersPaths);
             }
 
-            XmlElement treatTestAdapterErrorsAsWarnings = doc.CreateElement("TreatTestAdapterErrorsAsWarnings");
-            treatTestAdapterErrorsAsWarnings.InnerXml = this.TreatTestAdapterErrorsAsWarnings.ToString();
-            root.AppendChild(treatTestAdapterErrorsAsWarnings);
+            if (this.TreatTestAdapterErrorsAsWarningsSet)
+            {
+                XmlElement treatTestAdapterErrorsAsWarnings = doc.CreateElement("TreatTestAdapterErrorsAsWarnings");
+                treatTestAdapterErrorsAsWarnings.InnerXml = this.TreatTestAdapterErrorsAsWarnings.ToString();
+                root.AppendChild(treatTestAdapterErrorsAsWarnings);
+            }
 
-            if (this.BinariesRoot != null)
+            if (this.BinariesRootSet && this.BinariesRoot != null)
             {
                 XmlElement binariesRoot = doc.CreateElement("BinariesRoot");
                 binariesRoot.InnerXml = this.BinariesRoot;
                 root.AppendChild(binariesRoot);
             }
 
-            if(!string.IsNullOrEmpty(this.TargetDevice))
+            if(this.TargetDeviceSet && !string.IsNullOrEmpty(this.TargetDevice))
             {
                 XmlElement targetDevice = doc.CreateElement("TargetDevice");
                 targetDevice.InnerXml = this.TargetDevice;
