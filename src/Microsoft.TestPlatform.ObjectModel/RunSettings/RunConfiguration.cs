@@ -113,8 +113,8 @@ namespace Microsoft.VisualStudio.TestPlatform.ObjectModel
             this.framework = Framework.DefaultFramework;
             this.resultsDirectory = Constants.DefaultResultsDirectory;
             this.SolutionDirectory = null;
-            this.TreatTestAdapterErrorsAsWarnings = Constants.DefaultTreatTestAdapterErrorsAsWarnings;
-            this.BinariesRoot = null;
+            this.treatTestAdapterErrorsAsWarnings = Constants.DefaultTreatTestAdapterErrorsAsWarnings;
+            this.binariesRoot = null;
             this.testAdaptersPaths = null;
             this.maxCpuCount = Constants.DefaultCpuCount;
             this.batchSize = Constants.DefaultBatchSize;
@@ -125,7 +125,7 @@ namespace Microsoft.VisualStudio.TestPlatform.ObjectModel
             this.inIsolation = false;
             this.shouldCollectSourceInformation = false;
             this.targetDevice = null;
-            this.ExecutionThreadApartmentState = Constants.DefaultExecutionThreadApartmentState;
+            this.executionThreadApartmentState = Constants.DefaultExecutionThreadApartmentState;
         }
 
         #endregion
